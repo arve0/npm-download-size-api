@@ -4,6 +4,7 @@
   "description": "api for cli tool download-size",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "test": "node test.js"
   },
   "repository": {
@@ -26,10 +27,7 @@
   "dependencies": {
     "deep-copy": "^1.4.0",
     "express": "^4.16.2",
-    "lru-cache": "^4.1.1",
-    "make-fetch-happen": "file:../make-fetch-happen",
     "nedb-promise": "^2.0.1",
-    "node-persist": "^2.1.0",
     "p-queue": "^2.2.0",
     "pacote": "^6.0.4",
     "si-prefix": "^0.1.0",
