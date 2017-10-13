@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>NPM download size API</title>
+</head>
+
+<body>
+  <h1>NPM download size API</h1>
+  <h2>Usage</h2>
+  <h3>GET <span id=href></span>packageName</h3>
+  <p>Gets information about package with name `packageName`.</p>
+  <h3>Example</h3>
+  <p><a><span id=href2></span>chalk</a> returns</p>
+  <p><pre><code>
+{
+  "name": "chalk",
+  "wanted": "latest",
+  "version": "2.1.0",
+  "tarballSize": 8447,
+  "dependencies": [
+    {
+      "name": "ansi-styles",
+      "wanted": "^3.1.0",
+      "version": "3.2.0",
+      "tarballSize": 3618,
+      "totalDependencies": 2,
+      "size": 16467,
+      "prettySize": "16.08 KiB"
+    },
+    {
+      "name": "escape-string-regexp",
+      "wanted": "^1.0.5",
+      "version": "1.0.5",
+      "tarballSize": 1578,
+      "totalDependencies": 0,
+      "size": 1578,
+      "prettySize": "1.54 KiB"
+    },
+    {
+      "name": "supports-color",
+      "wanted": "^4.0.0",
+      "version": "4.4.0",
+      "tarballSize": 2875,
+      "totalDependencies": 1,
+      "size": 4725,
+      "prettySize": "4.61 KiB"
+    }
+  ],
+  "totalDependencies": 6,
+  "size": 31217,
+  "prettySize": "30.49 KiB",
+  "_id": "2GNE8dFO4xZuLQQk"
+}
+  </code></pre></p>
+  <script>
+    var href = location.href.replace(/([^\/])$/, '$1/');
+    ['href', 'href2'].forEach(function (id) {
+      document.getElementById(id).innerText = href;
+    });
+    document.querySelector('a').href = href + 'chalk';
+  </script>
+</body>
+
+</html>
