@@ -1,16 +1,22 @@
 const https = require('https')
 const url = require('url')
 const util = require('util')
-const Queue = require('p-queue')
 
-let queue = new Queue({ concurrency: 10 })
+const agent = new https.Agent({
+  keepAlive: true,
+  keepAliveMsecs: 1000,
+  maxSocket: 10,
+  maxFreeSockets: 5
+})
+exports.agent = agent
 
 exports.head = function headRequest (options) {
   let hrefParsed = url.parse(options.href)
   options.method = 'HEAD'
   options.hostname = hrefParsed.hostname
   options.path = hrefParsed.path
-  return queue.add(() => new Promise((resolve, reject) => {
+  options.agent = agent
+  return new Promise((resolve, reject) => {
     const req = https.request(options)
     req.end()
 
@@ -27,5 +33,5 @@ exports.head = function headRequest (options) {
         resolve(response)
       }
     })
-  }))
+  })
 }
