@@ -20,6 +20,8 @@ exports.head = function headRequest (options) {
     const req = https.request(options)
     req.end()
 
+    req.on('error', reject)
+
     req.on('response', (response) => {
       if (response.statusCode === 302 && response.headers['location']) {
         // redirect -> recurse
