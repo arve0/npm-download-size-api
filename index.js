@@ -12,6 +12,7 @@ app.get('/', function (req, res) {
 })
 
 app.get('/:pkgName', function (req, res) {
+  res.setHeader('Access-Control-Allow-Origin', '*')
   let pkgName = req.params.pkgName
   if (notValidPkgName(pkgName)) {
     res.status(500).send(`"${pkgName}" is not a valid package name\n`)
