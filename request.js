@@ -15,6 +15,12 @@ exports.head = function headRequest (options) {
     req.end()
 
     req.on('response', (response) => {
+      if (response.statusCode === 302 && response.headers['location']) {
+        // redirect -> recurse
+        options.href = response.headers['location']
+        resolve(headRequest(options))
+        return
+      }
       if (response.statusCode !== 200) {
         reject(new Error(`Got status code ${response.statusCode} for request ${util.inspect(options)}.`))
       } else {
