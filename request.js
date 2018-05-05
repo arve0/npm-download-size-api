@@ -1,39 +1,54 @@
 const https = require('https')
 const url = require('url')
 const util = require('util')
+const pool = require('generic-pool')
 
-const agent = new https.Agent({
-  keepAlive: true,
-  keepAliveMsecs: 1000,
-  maxSocket: 10,
-  maxFreeSockets: 5
+const agentFactory = {
+  create: () => new https.Agent({
+    keepAlive: true,
+    keepAliveMsecs: 1000,
+    maxSocket: 10,
+    maxFreeSockets: 5
+  }),
+  destroy: (agent) => agent.destroy()
+}
+
+const agents = pool.createPool(agentFactory, {
+  max: 10,
+  min: 2
 })
-exports.agent = agent
 
 exports.head = function headRequest (options) {
   let hrefParsed = url.parse(options.href)
   options.method = 'HEAD'
   options.hostname = hrefParsed.hostname
   options.path = hrefParsed.path
-  options.agent = agent
+
   return new Promise((resolve, reject) => {
-    const req = https.request(options)
-    req.end()
+    agents.acquire().then((agent) => {
+      options.agent = agent
 
-    req.on('error', reject)
+      const req = https.request(options)
+      req.end()
 
-    req.on('response', (response) => {
-      if (response.statusCode === 302 && response.headers['location']) {
-        // redirect -> recurse
-        options.href = response.headers['location']
-        resolve(headRequest(options))
-        return
-      }
-      if (response.statusCode !== 200) {
-        reject(new Error(`Got status code ${response.statusCode} for request ${util.inspect(options)}.`))
-      } else {
-        resolve(response)
-      }
+      req.on('error', reject)
+
+      req.on('response', (response) => {
+        if (response.statusCode === 302 && response.headers['location']) {
+          // redirect -> recurse
+          options.href = response.headers['location']
+          resolve(headRequest(options))
+          return
+        }
+        if (response.statusCode !== 200) {
+          reject(new Error(`Got status code ${response.statusCode} for request ${util.inspect(options)}.`))
+        } else {
+          resolve(response)
+        }
+      })
+    }).catch((err) => {
+      console.error(err)
+      reject('Server out of resources, try again later.')
     })
   })
 }

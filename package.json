@@ -27,6 +27,7 @@
   "dependencies": {
     "deep-copy": "^1.4.0",
     "express": "^4.16.2",
+    "generic-pool": "^3.4.2",
     "nedb-promise": "^2.0.1",
     "pacote": "^7.6.1",
     "si-prefix": "^0.1.0",
