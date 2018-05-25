@@ -1,2 +1,5 @@
 node_modules
-store.json
+hrefSizes.json
+tarballs.json
+v2/*.js
+v2/*.js.map

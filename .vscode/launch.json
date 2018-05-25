@@ -7,7 +7,13 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Launch Program",
+      "name": "Launch v2",
+      "program": "${workspaceFolder}/v2/debug.js"
+    },
+    {
+      "type": "node",
+      "request": "launch",
+      "name": "Launch",
       "program": "${workspaceFolder}/debug.js"
     }
   ]
