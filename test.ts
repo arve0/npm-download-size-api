@@ -1,29 +1,40 @@
-import { getDownloadSize } from './v2/resolve'
+import agents from './v2/agents'
 import assert from 'assert'
+import { unlinkSync } from 'fs'
 
-async function testAsync() {
-    let async = await getDownloadSize('async', '2.6.0')
+let getDownloadSize: (name: string, wanted?: string) => Promise<PkgDownloadSize>
 
-    assert(async.version, '2.6.0')
-    assert.equal(async.tarballSize, 123240)
-    assert.equal(async.size, 428908)
-    assert.equal(async.totalDependencies, 1)
-    assert.equal(async.dependencies.length, 1)
-}
+describe('getDownloadSize', () => {
+    before(function () {
+        try {
+            unlinkSync('tarballs.json')
+        } catch { }
+        // import after deleting cache, as importing will read cache to memory
+        return import('./v2/resolve').then((m) => {
+            getDownloadSize = m.getDownloadSize
+        })
+    })
 
-async function testPoi() {
-    let poi = await getDownloadSize('poi', '10.0.0')
+    after(async function () {
+        let pool = await agents
+        await pool.drain()
+    })
 
-    assert(poi.version, '10.0.0')
-    assert.equal(poi.tarballSize, 10536)
-    assert.equal(poi.size, 16090378)
-    assert.equal(poi.totalDependencies, 960)
-    assert.equal(poi.dependencies.length, 23)
-}
+    it('resolves chalk 2.4.1', async function () {
+        this.timeout(3 * 1000)
+        let chalk = await getDownloadSize('chalk', '2.4.1')
 
-let tests = [testAsync(), testPoi()]
+        assert(chalk.version, '2.4.1')
+        assert.equal(chalk.tarballSize, 9918)
+        assert.equal(chalk.size, 32978)
+        assert.equal(chalk.totalDependencies, 6)
+        assert.equal(chalk.dependencies.length, 3)
+    })
 
-Promise.all(tests).catch(err => {
-    console.error(err)
-    process.exit(1)
+    it('resolves poi in 20 seconds', async function () {
+        this.timeout(20 * 1000)
+
+        let poi = await getDownloadSize('poi')
+        assert(poi.size > 15 * 1024 * 1024, "total size is at least 15 MB")
+    })
 })

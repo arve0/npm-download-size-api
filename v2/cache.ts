@@ -8,7 +8,7 @@ const hrefStore = new NeDB({
 })
 
 const tarballsStore = new NeDB({
-  filename: 'pkgSizes.json',
+  filename: 'tarballs.json',
   autoload: true
 })
 

@@ -22,7 +22,6 @@ export async function getDownloadSize (name: string, wanted = 'latest'): Promise
     let pkg = await getDownloadSizeSimple(name, 'latest', agent)
 
     pool.put(agent)
-    pool.drain()
 
     return { ...pkg, dependencies }
 }

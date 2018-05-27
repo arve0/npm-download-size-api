@@ -1,5 +1,4 @@
 node_modules
 hrefSizes.json
 tarballs.json
-v2/*.js
-v2/*.js.map
+*.js.map
