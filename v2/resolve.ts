@@ -24,7 +24,7 @@ export async function getDownloadSize (name: string, wanted = 'latest'): Promise
     let dependencies = await Promise.all(
         deps.map(([name, wanted]) => getDownloadSizeSimple(name, wanted, agent))
     )
-    let pkg = await getDownloadSizeSimple(name, 'latest', agent)
+    let pkg = await getDownloadSizeSimple(name, wanted, agent)
 
     pool.put(agent)
 

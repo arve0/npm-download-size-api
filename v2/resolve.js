@@ -22,7 +22,7 @@ async function getDownloadSize(name, wanted = 'latest') {
     let pool = await agents_1.default;
     let agent = await pool.get();
     let dependencies = await Promise.all(deps.map(([name, wanted]) => getDownloadSizeSimple(name, wanted, agent)));
-    let pkg = await getDownloadSizeSimple(name, 'latest', agent);
+    let pkg = await getDownloadSizeSimple(name, wanted, agent);
     pool.put(agent);
     cache_1.default.pkgSizes.insert(Object.assign({}, pkg, { dependencies }));
     return Object.assign({}, pkg, { dependencies });

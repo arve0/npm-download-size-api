@@ -12,20 +12,22 @@ let INDEX = path_1.join(__dirname, '..', 'index.html');
 app.get('/', function (req, res) {
     res.sendFile(INDEX);
 });
-app.get('/:pkgName', function (req, res) {
+app.get('/:pkgSpec', function (req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    let pkgName = req.params.pkgName;
-    if (notValidPkgName(pkgName)) {
-        res.status(500).send(`"${pkgName}" is not a valid package name\n`);
+    let pkgSpec = req.params.pkgSpec.split('@');
+    let name = pkgSpec[0] || "";
+    let version = pkgSpec[1];
+    if (notValidPkgName(name)) {
+        res.status(500).send(`"${name}" is not a valid package name\n`);
         return;
     }
-    resolve_1.getDownloadSize(pkgName)
+    resolve_1.getDownloadSize(name, version)
         .then((resolved) => {
         res.status(200).send(resolved);
     })
         .catch((err) => {
         if (err.response && err.response.status === 404) {
-            res.status(404).send(`"${pkgName}" not found\n`);
+            res.status(404).send(`"${name}" not found\n`);
             return;
         }
         res.status(500).send('500 Server Error\n');
@@ -37,4 +39,5 @@ function notValidPkgName(pkg) {
     return !r.validForNewPackages && !r.validForOldPackages;
 }
 module.exports = app;
+exports.default = app;
 //# sourceMappingURL=index.js.map

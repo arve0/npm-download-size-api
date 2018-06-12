@@ -1,13 +1,19 @@
 import agents from './v2/agents'
 import assert from 'assert'
 import { unlinkSync } from 'fs'
+import Server from './v2/index'
+import http from 'http'
 
 let getDownloadSize: (name: string, wanted?: string) => Promise<PkgDownloadSize>
 
 describe('getDownloadSize', () => {
+    let server: http.Server
+
     before(function () {
         rm('tarballs.json')
         rm('pkgSizes.json')
+
+        server = Server.listen(3333)
 
         // import after deleting cache, as importing will read cache to memory
         return import('./v2/resolve').then((m) => {
@@ -16,6 +22,7 @@ describe('getDownloadSize', () => {
     })
 
     after(async function () {
+        server.close()
         let pool = await agents
         await pool.drain()
     })
@@ -42,10 +49,49 @@ describe('getDownloadSize', () => {
         this.timeout(20)
         await getDownloadSize('parcel')
     })
+
+    it('accepts package version', async function () {
+        let version = '1.0.0'
+        let spec = `async@${version}`
+        let pkg = await getJSON(`http://localhost:3333/${spec}`)
+        assert.equal(pkg.version, version)
+    })
+
+    it('accepts range version', async function () {
+        let version = '^1.0.0'
+        let resolvesTo = '1.5.2'
+        let spec = `async@${version}`
+        let pkg = await getJSON(`http://localhost:3333/${spec}`)
+        assert.equal(pkg.version, resolvesTo)
+    })
 })
 
 function rm (filename: string) {
     try {
         unlinkSync(filename)
     } catch { }
+}
+
+function getJSON (url: string): Promise<PkgDownloadSize> {
+    return new Promise((resolve, reject) => {
+        http.get(url, res => {
+            if (res.statusCode !== 200) {
+                return reject(`Got status ${res.statusCode}`)
+            }
+
+            let data = ""
+            res.on('data', chunk => {
+                data += chunk
+            })
+
+            res.on('end', () => {
+                try {
+                    let pkg = JSON.parse(data)
+                    resolve(pkg)
+                } catch {
+                    reject('Unable to parse JSON')
+                }
+            })
+        })
+    })
 }
