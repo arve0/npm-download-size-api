@@ -6,7 +6,7 @@ import assert from 'assert'
 main()
 
 async function main () {
-  let version = '1.0.0'
+  let version = 'asdf'
   let spec = `async@${version}`
 
   server.listen(3333, () => {

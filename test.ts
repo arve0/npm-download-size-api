@@ -3,6 +3,7 @@ import assert from 'assert'
 import { unlinkSync } from 'fs'
 import Server from './v2/index'
 import http from 'http'
+import { error } from 'util';
 
 let getDownloadSize: (name: string, wanted?: string) => Promise<PkgDownloadSize>
 
@@ -64,6 +65,17 @@ describe('getDownloadSize', () => {
         let pkg = await getJSON(`http://localhost:3333/${spec}`)
         assert.equal(pkg.version, resolvesTo)
     })
+
+    it('shall give 404 when version is invalid', async function () {
+        let version = 'asdf'
+        let spec = `async@${version}`
+        try {
+            await getJSON(`http://localhost:3333/${spec}`)
+            assert(false, `request for ${spec} did not fail`)
+        } catch (msg) {
+            assert(msg.match("^404: No matching version found for async@asdf") !== null)
+        }
+    })
 })
 
 function rm (filename: string) {
@@ -75,16 +87,16 @@ function rm (filename: string) {
 function getJSON (url: string): Promise<PkgDownloadSize> {
     return new Promise((resolve, reject) => {
         http.get(url, res => {
-            if (res.statusCode !== 200) {
-                return reject(`Got status ${res.statusCode}`)
-            }
-
             let data = ""
             res.on('data', chunk => {
                 data += chunk
             })
 
             res.on('end', () => {
+                if (res.statusCode !== 200) {
+                    return reject(`${res.statusCode}: ${data}`)
+                }
+
                 try {
                     let pkg = JSON.parse(data)
                     resolve(pkg)

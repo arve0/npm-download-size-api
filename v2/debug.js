@@ -8,7 +8,7 @@ const http_1 = __importDefault(require("http"));
 const assert_1 = __importDefault(require("assert"));
 main();
 async function main() {
-    let version = '1.0.0';
+    let version = 'asdf';
     let spec = `async@${version}`;
     _1.default.listen(3333, () => {
         http_1.default.get(`http://localhost:3333/${spec}`, res => {

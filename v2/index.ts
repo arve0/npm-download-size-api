@@ -25,7 +25,10 @@ app.get('/:pkgSpec', function (req, res) {
       res.status(200).send(resolved)
     })
     .catch((err) => {
-      if (err.response && err.response.status === 404) {
+      if (err.code === 'ETARGET') {
+        res.status(404).send(`${err.message}, possible versions are ${err.versions.join(', ')}.`)
+        return
+      } else if (err.response && err.response.status === 404) {
         res.status(404).send(`"${name}" not found\n`)
         return
       }
