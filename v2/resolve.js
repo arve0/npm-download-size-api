@@ -15,11 +15,16 @@ const path_1 = __importDefault(require("path"));
 const lru_cache_1 = __importDefault(require("lru-cache"));
 async function getDownloadSize(name, wanted = 'latest') {
     let { version, tarball, dependencies: deps } = await getManifest(name, wanted);
+    let downloadSizeCache = await cache_1.default.pkgSizes.findOne({ name, version });
+    if (downloadSizeCache !== null) {
+        return downloadSizeCache;
+    }
     let pool = await agents_1.default;
     let agent = await pool.get();
     let dependencies = await Promise.all(deps.map(([name, wanted]) => getDownloadSizeSimple(name, wanted, agent)));
     let pkg = await getDownloadSizeSimple(name, 'latest', agent);
     pool.put(agent);
+    cache_1.default.pkgSizes.insert(Object.assign({}, pkg, { dependencies }));
     return Object.assign({}, pkg, { dependencies });
 }
 exports.getDownloadSize = getDownloadSize;

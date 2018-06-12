@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const resolve_1 = require("./resolve");
+main();
 async function main() {
     try {
         let pkg = await resolve_1.getDownloadSize(process.argv[2] || 'webpack');

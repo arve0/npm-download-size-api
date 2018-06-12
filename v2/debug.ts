@@ -1,5 +1,6 @@
-import { getDownloadSize, getDownloadSizeSimple } from './resolve'
-import { inspect } from 'util'
+import { getDownloadSize } from './resolve'
+
+main()
 
 async function main () {
   try {

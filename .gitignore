@@ -1,4 +1,5 @@
 node_modules
 hrefSizes.json
 tarballs.json
+pkgSizes.json
 *.js.map

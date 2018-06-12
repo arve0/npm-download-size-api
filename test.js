@@ -16,10 +16,8 @@ const fs_1 = require("fs");
 let getDownloadSize;
 describe('getDownloadSize', () => {
     before(function () {
-        try {
-            fs_1.unlinkSync('tarballs.json');
-        }
-        catch (_a) { }
+        rm('tarballs.json');
+        rm('pkgSizes.json');
         // import after deleting cache, as importing will read cache to memory
         return Promise.resolve().then(() => __importStar(require('./v2/resolve'))).then((m) => {
             getDownloadSize = m.getDownloadSize;
@@ -34,14 +32,24 @@ describe('getDownloadSize', () => {
         let chalk = await getDownloadSize('chalk', '2.4.1');
         assert_1.default(chalk.version, '2.4.1');
         assert_1.default.equal(chalk.tarballSize, 9918);
-        assert_1.default.equal(chalk.size, 32978);
+        assert_1.default(Math.abs(chalk.size - 32978) < 2048, 'package size not within 2kB of last resolve');
         assert_1.default.equal(chalk.totalDependencies, 6);
         assert_1.default.equal(chalk.dependencies.length, 3);
     });
-    it('resolves poi in 20 seconds', async function () {
-        this.timeout(20 * 1000);
-        let poi = await getDownloadSize('poi');
-        assert_1.default(poi.size > 15 * 1024 * 1024, "total size is at least 15 MB");
+    it('resolves parcel in 10 seconds', async function () {
+        this.timeout(10 * 1000);
+        let parcel = await getDownloadSize('parcel');
+        assert_1.default(parcel.size > 9 * 1024 * 1024, "total size is at least 9 MB");
+    });
+    it('caches parcel and responds within 20 ms', async function () {
+        this.timeout(20);
+        await getDownloadSize('parcel');
     });
 });
+function rm(filename) {
+    try {
+        fs_1.unlinkSync(filename);
+    }
+    catch (_a) { }
+}
 //# sourceMappingURL=test.js.map

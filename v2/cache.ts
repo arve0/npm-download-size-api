@@ -2,25 +2,31 @@
 import NeDB from 'nedb'
 import { promisify } from 'util'
 
-const hrefStore = new NeDB({
+const hrefSizeDB = new NeDB({
   filename: 'hrefSizes.json',
   autoload: true
 })
 
-const tarballsStore = new NeDB({
+const tarballDB = new NeDB({
   filename: 'tarballs.json',
   autoload: true
 })
 
-const hrefSizes: Store<HrefDownloadSize> = {
-  // we need to bind nedb to preserve this
-  findOne: promisify(hrefStore.findOne).bind(hrefStore),
-  insert: promisify(hrefStore.insert).bind(hrefStore),
+const pkgSizeDB = new NeDB({
+  filename: 'pkgSizes.json',
+  autoload: true
+})
+
+const hrefSizes: Store<HrefDownloadSize> = StoreFactory(hrefSizeDB)
+const tarballs: Store<CacheTarballs> = StoreFactory(tarballDB)
+const pkgSizes: Store<PkgDownloadSize> = StoreFactory(pkgSizeDB)
+
+function StoreFactory (db: any) {
+  return {
+    // we need to bind nedb to preserve `this`
+    findOne: promisify(db.findOne).bind(db),
+    insert: promisify(db.insert).bind(db),
+  }
 }
 
-const tarballs: Store<CacheTarballs> = {
-  findOne: promisify(tarballsStore.findOne).bind(tarballsStore),
-  insert: promisify(tarballsStore.insert).bind(tarballsStore),
-}
-
-export = { hrefSizes, tarballs }
+export = { hrefSizes, tarballs, pkgSizes }
