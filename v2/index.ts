@@ -39,7 +39,7 @@ function parseSpec(spec: string) {
   let name, version
   let firstAt = spec.indexOf('@')
   let lastAt = spec.lastIndexOf('@')
-  if (firstAt !== lastAt || lastAt !== 0) {
+  if (firstAt !== lastAt || lastAt > 0) {
     name = spec.substring(0, lastAt)
     version = spec.substring(lastAt + 1)
   } else {

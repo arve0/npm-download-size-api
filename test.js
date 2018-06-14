@@ -50,6 +50,11 @@ describe('getDownloadSize', () => {
         this.timeout(20);
         await getDownloadSize('parcel');
     });
+    it('accepts http get requests', async function () {
+        let name = 'parcel';
+        let pkg = await getJSON(`http://localhost:3333/${name}`);
+        assert_1.default.equal(pkg.name, name);
+    });
     it('accepts package version', async function () {
         let version = '1.0.0';
         let spec = `async@${version}`;
