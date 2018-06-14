@@ -14,9 +14,7 @@ app.get('/', function (req, res) {
 });
 app.get('/:pkgSpec', function (req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
-    let pkgSpec = req.params.pkgSpec.split('@');
-    let name = pkgSpec[0] || "";
-    let version = pkgSpec[1];
+    let { name, version } = parseSpec(req.params.pkgSpec);
     if (notValidPkgName(name)) {
         res.status(500).send(`"${name}" is not a valid package name\n`);
         return;
@@ -38,6 +36,20 @@ app.get('/:pkgSpec', function (req, res) {
         console.error(err);
     });
 });
+function parseSpec(spec) {
+    let name, version;
+    let firstAt = spec.indexOf('@');
+    let lastAt = spec.lastIndexOf('@');
+    if (firstAt !== lastAt || lastAt !== 0) {
+        name = spec.substring(0, lastAt);
+        version = spec.substring(lastAt + 1);
+    }
+    else {
+        name = spec;
+        version = undefined;
+    }
+    return { name, version };
+}
 function notValidPkgName(pkg) {
     let r = validate_npm_package_name_1.default(pkg);
     return !r.validForNewPackages && !r.validForOldPackages;

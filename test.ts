@@ -66,7 +66,7 @@ describe('getDownloadSize', () => {
         assert.equal(pkg.version, resolvesTo)
     })
 
-    it('shall give 404 when version is invalid', async function () {
+    it('gives 404 for invalid versions @asdf', async function () {
         let version = 'asdf'
         let spec = `async@${version}`
         try {
@@ -75,6 +75,21 @@ describe('getDownloadSize', () => {
         } catch (msg) {
             assert(msg.match("^404: No matching version found for async@asdf") !== null)
         }
+    })
+
+    it('supports namespaced packages @feathersjs/feathers', async function () {
+        let spec = '@feathersjs/feathers'
+        let pkg = await getJSON(`http://localhost:3333/${spec.replace('/', '%2f')}`)
+        assert.equal(pkg.name, spec)
+    })
+
+    it('supports namespaced packages with version @feathersjs/feathers@3', async function () {
+        let name = '@feathersjs/feathers'
+        let version = '@3'
+        let spec = (name + version)
+        let pkg = await getJSON(`http://localhost:3333/${spec.replace('/', '%2f')}`)
+        assert.equal(pkg.name, name)
+        assert.equal(pkg.version.indexOf('3.'), 0)
     })
 })
 
