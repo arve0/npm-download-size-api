@@ -138,7 +138,7 @@ async function getTarballSize (href: string, agent: Agent): Promise<number> {
         return cacheSize.size
     }
 
-    const size = await getHrefSize({ href, agent })
+    const size = await getHrefSize(href, agent)
     cache.hrefSizes.insert({ href, size })
     return size
 }

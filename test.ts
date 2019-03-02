@@ -3,7 +3,6 @@ import assert from 'assert'
 import { unlinkSync } from 'fs'
 import Server from './index'
 import http from 'http'
-import { error } from 'util';
 
 let getDownloadSize: (name: string, wanted?: string) => Promise<PkgDownloadSize>
 
@@ -39,20 +38,8 @@ describe('getDownloadSize', () => {
         assert.equal(chalk.dependencies.length, 3)
     })
 
-    it('resolves parcel in 10 seconds', async function () {
-        this.timeout(10 * 1000)
-
-        let parcel = await getDownloadSize('parcel')
-        assert(parcel.size > 9 * 1024 * 1024, "total size is at least 9 MB")
-    })
-
-    it('caches parcel and responds within 20 ms', async function () {
-        this.timeout(20)
-        await getDownloadSize('parcel')
-    })
-
     it('accepts http get requests', async function () {
-        let name = 'parcel'
+        let name = 'chalk'
         let pkg = await getJSON(`http://localhost:3333/${name}`)
         assert.equal(pkg.name, name)
     })
@@ -96,6 +83,34 @@ describe('getDownloadSize', () => {
         let pkg = await getJSON(`http://localhost:3333/${spec.replace('/', '%2f')}`)
         assert.equal(pkg.name, name)
         assert.equal(pkg.version.indexOf('3.'), 0)
+    })
+
+    let parcelPromise: Promise<any>
+    it('should not block cheap requests alongside expensive requests', async function () {
+        this.timeout(500)
+
+        parcelPromise = getDownloadSize('parcel')
+        console.time('cheap-request')
+        await getJSON(`http://localhost:3333/download-size`)
+        console.timeEnd('cheap-request')
+    })
+
+    it('should resolve cached requests within 20 ms alongside expensive requests', async function () {
+        this.timeout(50)
+        console.time('cached-request')
+        await getJSON(`http://localhost:3333/chalk@2.4.1`)
+        console.timeEnd('cached-request')
+    })
+
+    it('resolve parcel within 10 seconds then have it cached', async function () {
+        this.timeout(10 * 1000 + 20)
+
+        await parcelPromise
+
+        const start = Date.now()
+        await getDownloadSize('parcel')
+        const time = Date.now() - start
+        assert(time <= 20, `cached time was ${time}`)
     })
 })
 
