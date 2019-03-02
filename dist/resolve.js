@@ -108,7 +108,7 @@ async function getTarballSize(href, agent) {
     if (cacheSize) {
         return cacheSize.size;
     }
-    const size = await request_1.default({ href, agent });
+    const size = await request_1.default(href, agent);
     cache_1.default.hrefSizes.insert({ href, size });
     return size;
 }
