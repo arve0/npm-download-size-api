@@ -1,2 +1,4 @@
 node_modules
-store.json
+hrefSizes.json
+tarballs.json
+pkgSizes.json

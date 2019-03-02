@@ -11,25 +11,27 @@
 <body>
   <h1>NPM download size API</h1>
   <h2>Usage</h2>
-  <h3>GET <span id=href></span>packageName</h3>
-  <p>Gets information about package with name `packageName`.</p>
+  <h3>GET <span id=href></span>package-name</h3>
+  <p>Gets information about package with name `package-name`.</p>
   <h3>Example</h3>
   <p><a><span id=href2></span>chalk</a> returns</p>
-  <p><pre><code>
-{
+  <p><pre><code>{
   "name": "chalk",
   "wanted": "latest",
-  "version": "2.1.0",
-  "tarballSize": 8447,
+  "version": "2.4.2",
+  "tarballSize": 9865,
+  "totalDependencies": 6,
+  "size": 33022,
+  "prettySize": "32.25 KiB",
   "dependencies": [
     {
       "name": "ansi-styles",
-      "wanted": "^3.1.0",
-      "version": "3.2.0",
-      "tarballSize": 3618,
+      "wanted": "^3.2.1",
+      "version": "3.2.1",
+      "tarballSize": 3808,
       "totalDependencies": 2,
-      "size": 16467,
-      "prettySize": "16.08 KiB"
+      "size": 16761,
+      "prettySize": "16.37 KiB"
     },
     {
       "name": "escape-string-regexp",
@@ -42,20 +44,16 @@
     },
     {
       "name": "supports-color",
-      "wanted": "^4.0.0",
-      "version": "4.4.0",
-      "tarballSize": 2875,
+      "wanted": "^5.3.0",
+      "version": "5.5.0",
+      "tarballSize": 3067,
       "totalDependencies": 1,
-      "size": 4725,
-      "prettySize": "4.61 KiB"
+      "size": 4818,
+      "prettySize": "4.71 KiB"
     }
   ],
-  "totalDependencies": 6,
-  "size": 31217,
-  "prettySize": "30.49 KiB",
-  "_id": "2GNE8dFO4xZuLQQk"
-}
-  </code></pre></p>
+  "_id": "DHdJlsUk8PAzqLDm"
+}</code></pre></p>
   <script>
     var href = location.href.replace(/([^\/])$/, '$1/');
     ['href', 'href2'].forEach(function (id) {
