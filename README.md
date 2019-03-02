@@ -2,6 +2,10 @@
 API for [npm download size](https://arve0.github.io/npm-download-size).
 
 ## Usage
+```sh
+npm i arve0/npm-download-size-api
+```
+
 ```js
 const express = require('express')
 const app = express()
