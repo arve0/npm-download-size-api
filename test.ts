@@ -1,7 +1,7 @@
-import agents from './v2/agents'
+import agents from './agents'
 import assert from 'assert'
 import { unlinkSync } from 'fs'
-import Server from './v2/index'
+import Server from './index'
 import http from 'http'
 import { error } from 'util';
 
@@ -17,7 +17,7 @@ describe('getDownloadSize', () => {
         server = Server.listen(3333)
 
         // import after deleting cache, as importing will read cache to memory
-        return import('./v2/resolve').then((m) => {
+        return import('./resolve').then((m) => {
             getDownloadSize = m.getDownloadSize
         })
     })

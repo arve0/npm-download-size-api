@@ -10,10 +10,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const agents_1 = __importDefault(require("./v2/agents"));
+const agents_1 = __importDefault(require("./agents"));
 const assert_1 = __importDefault(require("assert"));
 const fs_1 = require("fs");
-const index_1 = __importDefault(require("./v2/index"));
+const index_1 = __importDefault(require("./index"));
 const http_1 = __importDefault(require("http"));
 let getDownloadSize;
 describe('getDownloadSize', () => {
@@ -23,7 +23,7 @@ describe('getDownloadSize', () => {
         rm('pkgSizes.json');
         server = index_1.default.listen(3333);
         // import after deleting cache, as importing will read cache to memory
-        return Promise.resolve().then(() => __importStar(require('./v2/resolve'))).then((m) => {
+        return Promise.resolve().then(() => __importStar(require('./resolve'))).then((m) => {
             getDownloadSize = m.getDownloadSize;
         });
     });
