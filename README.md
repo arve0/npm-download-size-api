@@ -1,5 +1,5 @@
 # npm download size
-API for [npm-download-size](https://github.com/arve0/npm-download-size).
+API for [npm download size](https://arve0.github.io/npm-download-size).
 
 ## Usage
 ```js
