@@ -14,7 +14,7 @@ const agents_1 = __importDefault(require("./agents"));
 const path_1 = __importDefault(require("path"));
 const lru_cache_1 = __importDefault(require("lru-cache"));
 async function getDownloadSize(name, wanted = 'latest') {
-    let { version, tarball, dependencies: deps } = await getManifest(name, wanted);
+    let { version, dependencies: deps } = await getManifest(name, wanted);
     let downloadSizeCache = await cache_1.default.pkgSizes.findOne({ name, version });
     if (downloadSizeCache !== null) {
         return downloadSizeCache;
@@ -45,7 +45,7 @@ function spec(name, wanted) {
     return `${name}@${wanted}`;
 }
 async function getDownloadSizeSimple(name, wanted, agent) {
-    let { version, tarball, dependencies } = await getManifest(name, wanted);
+    let { version, tarball } = await getManifest(name, wanted);
     let tarballSize, tarballs;
     let pkgCache = await cache_1.default.tarballs.findOne({ name, version });
     if (pkgCache !== null) {
@@ -120,4 +120,3 @@ function pretty(size) {
     let [prettySize, postFix] = si_prefix_1.default.byte.convert(size);
     return prettySize.toFixed(2) + ' ' + postFix;
 }
-//# sourceMappingURL=resolve.js.map

@@ -121,4 +121,3 @@ function getJSON(url) {
         });
     });
 }
-//# sourceMappingURL=test.js.map

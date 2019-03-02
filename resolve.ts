@@ -11,7 +11,7 @@ import path from 'path'
 import LRU from 'lru-cache'
 
 export async function getDownloadSize (name: string, wanted = 'latest'): Promise<PkgDownloadSize> {
-    let { version, tarball, dependencies: deps } = await getManifest(name, wanted)
+    let { version, dependencies: deps } = await getManifest(name, wanted)
 
     let downloadSizeCache = await cache.pkgSizes.findOne({ name, version })
     if (downloadSizeCache !== null)  {
@@ -54,7 +54,7 @@ function spec (name: string, wanted: string) {
 }
 
 export async function getDownloadSizeSimple (name: string, wanted: string, agent: Agent): Promise<PkgDownloadSizeSimple> {
-    let { version, tarball, dependencies } = await getManifest(name, wanted)
+    let { version, tarball } = await getManifest(name, wanted)
 
     let tarballSize, tarballs
     let pkgCache = await cache.tarballs.findOne({ name, version })

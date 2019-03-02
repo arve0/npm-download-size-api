@@ -53,4 +53,3 @@ function getHrefSize(options, retry = false) {
     });
 }
 module.exports = getHrefSize;
-//# sourceMappingURL=request.js.map

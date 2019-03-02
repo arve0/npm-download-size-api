@@ -13,4 +13,3 @@ module.exports = pooler_1.NewPooler({
         return agent.freeSockets != 0;
     }
 });
-//# sourceMappingURL=agents.js.map

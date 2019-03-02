@@ -56,4 +56,3 @@ function notValidPkgName(pkg) {
 }
 module.exports = app;
 exports.default = app;
-//# sourceMappingURL=index.js.map

@@ -1,7 +1,7 @@
 import https from 'https'
 import url from 'url'
 import util from 'util'
-import { ClientRequest, ClientResponse } from 'http';
+import { ClientResponse } from 'http';
 
 interface Options extends https.RequestOptions {
   href: string,

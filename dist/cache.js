@@ -28,4 +28,3 @@ function StoreFactory(db) {
     };
 }
 module.exports = { hrefSizes, tarballs, pkgSizes };
-//# sourceMappingURL=cache.js.map

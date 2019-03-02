@@ -2,10 +2,10 @@
   "name": "npm-download-size-api",
   "version": "2.0.0",
   "description": "api for cli tool download-size",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "start": "node server.js",
-    "test": "tsc && mocha"
+    "test": "tsc && mocha dist/test.js"
   },
   "repository": {
     "type": "git",

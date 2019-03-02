@@ -38,4 +38,3 @@ function printJSON(obj) {
     console.log('---- printing ----');
     console.log(JSON.stringify(obj, null, 2));
 }
-//# sourceMappingURL=debug.js.map
