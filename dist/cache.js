@@ -5,16 +5,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 // @ts-ignore: declare own types on promisified stores
 const nedb_1 = __importDefault(require("nedb"));
 const util_1 = require("util");
+const path_1 = __importDefault(require("path"));
+const folder = 'storage';
+// if (!fs.existsSync(folder)) {
+//   fs.mkdirSync(folder)
+// }
 const hrefSizeDB = new nedb_1.default({
-    filename: 'hrefSizes.json',
+    filename: path_1.default.join(folder, 'hrefSizes.json'),
     autoload: true
 });
 const tarballDB = new nedb_1.default({
-    filename: 'tarballs.json',
+    filename: path_1.default.join(folder, 'tarballs.json'),
     autoload: true
 });
 const pkgSizeDB = new nedb_1.default({
-    filename: 'pkgSizes.json',
+    filename: path_1.default.join(folder, 'pkgSizes.json'),
     autoload: true
 });
 const hrefSizes = StoreFactory(hrefSizeDB);
