@@ -11,9 +11,9 @@ app.get('/', function (req, res) {
   res.sendFile(INDEX)
 })
 
-app.get('/:pkgSpec', function (req, res) {
+app.get(/^\/(.*)$/, function (req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*')
-  let { name, version } = parseSpec(req.params.pkgSpec)
+  let { name, version } = parseSpec(req.params[0])
   if (notValidPkgName(name)) {
     res.status(500).send(`"${name}" is not a valid package name\n`)
     return
