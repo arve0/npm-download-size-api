@@ -1,12 +1,11 @@
 import { request } from 'https'
 import url from 'url'
 import util from 'util'
-import { ClientResponse, Agent } from 'http';
+import { IncomingMessage, Agent } from 'http';
 
 function getHrefSize (href: string, agent: Agent, retry = false): Promise<number> {
   let hrefParsed = url.parse(href)
   let options = {
-    method: 'HEAD',
     hostname: hrefParsed.hostname,
     path: hrefParsed.path,
     agent: agent,
@@ -25,7 +24,9 @@ function getHrefSize (href: string, agent: Agent, retry = false): Promise<number
       }
     })
 
-    req.on('response', (response: ClientResponse) => {
+    req.on('response', (response: IncomingMessage) => {
+      response.destroy()
+
       if (response.statusCode === 302 && response.headers['location']) {
         // @ts-ignore: redirect -> recurse
         href = response.headers['location']

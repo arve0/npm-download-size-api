@@ -8,7 +8,6 @@ const util_1 = __importDefault(require("util"));
 function getHrefSize(href, agent, retry = false) {
     let hrefParsed = url_1.default.parse(href);
     let options = {
-        method: 'HEAD',
         hostname: hrefParsed.hostname,
         path: hrefParsed.path,
         agent: agent,
@@ -26,6 +25,7 @@ function getHrefSize(href, agent, retry = false) {
             }
         });
         req.on('response', (response) => {
+            response.destroy();
             if (response.statusCode === 302 && response.headers['location']) {
                 // @ts-ignore: redirect -> recurse
                 href = response.headers['location'];
