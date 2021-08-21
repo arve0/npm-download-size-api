@@ -104,7 +104,7 @@ async function getTotalSize(urls, agent) {
     return sizes.reduce((sum, n) => sum + n, 0);
 }
 async function getTarballSize(href, agent) {
-    let cacheSize = await cache_1.default.hrefSizes.findOne({ href });
+    let cacheSize = cache_1.default.hrefSizes.find(href);
     if (cacheSize) {
         return cacheSize.size;
     }

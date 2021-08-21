@@ -133,13 +133,14 @@ async function getTotalSize (urls: IterableIterator<string>, agent: Agent): Prom
 }
 
 async function getTarballSize (href: string, agent: Agent): Promise<number> {
-    let cacheSize = await cache.hrefSizes.findOne({ href })
+    let cacheSize = cache.hrefSizes.find(href)
     if (cacheSize) {
         return cacheSize.size
     }
 
     const size = await getHrefSize(href, agent)
     cache.hrefSizes.insert({ href, size })
+
     return size
 }
 

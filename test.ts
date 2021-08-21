@@ -3,28 +3,24 @@ import assert from 'assert'
 import { unlinkSync } from 'fs'
 import Server from './index'
 import http from 'http'
-
-let getDownloadSize: (name: string, wanted?: string) => Promise<PkgDownloadSize>
+import path from 'path'
+import { getDownloadSize } from './resolve'
 
 describe('getDownloadSize', () => {
     let server: http.Server
 
     before(function () {
-        rm('tarballs.json')
-        rm('pkgSizes.json')
-
         server = Server.listen(3333)
-
-        // import after deleting cache, as importing will read cache to memory
-        return import('./resolve').then((m) => {
-            getDownloadSize = m.getDownloadSize
-        })
     })
 
     after(async function () {
         server.close()
         let pool = await agents
         await pool.drain()
+
+        rm(path.join('storage', 'cache.sqlite3'))
+        rm(path.join('storage', 'pkgSizes.json'))
+        rm(path.join('storage', 'tarballs.json'))
     })
 
     it('resolves chalk 2.4.1', async function () {
@@ -117,7 +113,7 @@ describe('getDownloadSize', () => {
 function rm (filename: string) {
     try {
         unlinkSync(filename)
-    } catch { }
+    } catch (_error) { /* noop */ }
 }
 
 function getJSON (url: string): Promise<PkgDownloadSize> {

@@ -2,39 +2,30 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
-    result["default"] = mod;
-    return result;
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 const agents_1 = __importDefault(require("./agents"));
 const assert_1 = __importDefault(require("assert"));
 const fs_1 = require("fs");
 const index_1 = __importDefault(require("./index"));
 const http_1 = __importDefault(require("http"));
-let getDownloadSize;
+const path_1 = __importDefault(require("path"));
+const resolve_1 = require("./resolve");
 describe('getDownloadSize', () => {
     let server;
     before(function () {
-        rm('tarballs.json');
-        rm('pkgSizes.json');
         server = index_1.default.listen(3333);
-        // import after deleting cache, as importing will read cache to memory
-        return Promise.resolve().then(() => __importStar(require('./resolve'))).then((m) => {
-            getDownloadSize = m.getDownloadSize;
-        });
     });
     after(async function () {
         server.close();
         let pool = await agents_1.default;
         await pool.drain();
+        rm(path_1.default.join('storage', 'cache.sqlite3'));
+        rm(path_1.default.join('storage', 'pkgSizes.json'));
+        rm(path_1.default.join('storage', 'tarballs.json'));
     });
     it('resolves chalk 2.4.1', async function () {
         this.timeout(3 * 1000);
-        let chalk = await getDownloadSize('chalk', '2.4.1');
+        let chalk = await resolve_1.getDownloadSize('chalk', '2.4.1');
         assert_1.default(chalk.version, '2.4.1');
         assert_1.default.equal(chalk.tarballSize, 9918);
         assert_1.default(Math.abs(chalk.size - 32978) < 2048, 'package size not within 2kB of last resolve');
@@ -86,7 +77,7 @@ describe('getDownloadSize', () => {
     let parcelPromise;
     it('should not block cheap requests alongside expensive requests', async function () {
         this.timeout(500);
-        parcelPromise = getDownloadSize('parcel');
+        parcelPromise = resolve_1.getDownloadSize('parcel');
         console.time('cheap-request');
         await getJSON(`http://localhost:3333/download-size`);
         console.timeEnd('cheap-request');
@@ -101,7 +92,7 @@ describe('getDownloadSize', () => {
         this.timeout(10 * 1000 + 20);
         await parcelPromise;
         const start = Date.now();
-        await getDownloadSize('parcel');
+        await resolve_1.getDownloadSize('parcel');
         const time = Date.now() - start;
         assert_1.default(time <= 20, `cached time was ${time}`);
     });
@@ -110,7 +101,7 @@ function rm(filename) {
     try {
         fs_1.unlinkSync(filename);
     }
-    catch (_a) { }
+    catch (_error) { /* noop */ }
 }
 function getJSON(url) {
     return new Promise((resolve, reject) => {
