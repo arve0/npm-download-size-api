@@ -17,10 +17,8 @@ const db = new better_sqlite3_1.default(dbFilename);
 // initial db setup
 const HREF_SIZE = 'href_size';
 db.prepare(`CREATE TABLE IF NOT EXISTS ${HREF_SIZE} (href text, size integer)`).run();
-const tarballDB = new nedb_1.default({
-    filename: path_1.default.join(folder, 'tarballs.json'),
-    autoload: true
-});
+const TARBALL = 'tarball';
+db.prepare(`CREATE TABLE IF NOT EXISTS ${TARBALL} (name text, version text, tarballs text)`).run();
 const pkgSizeDB = new nedb_1.default({
     filename: path_1.default.join(folder, 'pkgSizes.json'),
     autoload: true
@@ -34,7 +32,20 @@ const hrefSizes = {
             .run(hrefSize.href, hrefSize.size);
     }
 };
-const tarballs = StoreFactory(tarballDB);
+const tarballs = {
+    find: function (name, version) {
+        const result = db.prepare(`SELECT tarballs FROM ${TARBALL} WHERE name = ? AND version = ?`)
+            .get(name, version);
+        if (result === undefined) {
+            return undefined;
+        }
+        return JSON.parse(result.tarballs);
+    },
+    insert: function ({ name, version, tarballs }) {
+        db.prepare(`INSERT OR REPLACE INTO ${TARBALL} (name, version, tarballs) VALUES (?, ?, ?)`)
+            .run(name, version, JSON.stringify(tarballs));
+    }
+};
 const pkgSizes = StoreFactory(pkgSizeDB);
 function StoreFactory(db) {
     return {

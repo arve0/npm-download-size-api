@@ -57,10 +57,10 @@ export async function getDownloadSizeSimple (name: string, wanted: string, agent
     let { version, tarball } = await getManifest(name, wanted)
 
     let tarballSize, tarballs
-    let pkgCache = await cache.tarballs.findOne({ name, version })
+    let tarballsCached = cache.tarballs.find(name, version)
 
-    if (pkgCache !== null) {
-        tarballs = new Map(pkgCache.tarballs)
+    if (tarballsCached !== undefined) {
+        tarballs = new Map(tarballsCached)
     } else {
         tarballs = await getAllTarballs(name, version)
         cache.tarballs.insert({ name, version, tarballs: Array.from(tarballs.entries()) })

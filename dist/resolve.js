@@ -47,9 +47,9 @@ function spec(name, wanted) {
 async function getDownloadSizeSimple(name, wanted, agent) {
     let { version, tarball } = await getManifest(name, wanted);
     let tarballSize, tarballs;
-    let pkgCache = await cache_1.default.tarballs.findOne({ name, version });
-    if (pkgCache !== null) {
-        tarballs = new Map(pkgCache.tarballs);
+    let tarballsCached = cache_1.default.tarballs.find(name, version);
+    if (tarballsCached !== undefined) {
+        tarballs = new Map(tarballsCached);
     }
     else {
         tarballs = await getAllTarballs(name, version);

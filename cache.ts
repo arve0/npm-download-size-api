@@ -17,11 +17,8 @@ const db = new Database(dbFilename)
 // initial db setup
 const HREF_SIZE = 'href_size'
 db.prepare(`CREATE TABLE IF NOT EXISTS ${HREF_SIZE} (href text, size integer)`).run()
-
-const tarballDB = new NeDB({
-  filename: path.join(folder, 'tarballs.json'),
-  autoload: true
-})
+const TARBALL = 'tarball'
+db.prepare(`CREATE TABLE IF NOT EXISTS ${TARBALL} (name text, version text, tarballs text)`).run()
 
 const pkgSizeDB = new NeDB({
   filename: path.join(folder, 'pkgSizes.json'),
@@ -38,7 +35,23 @@ const hrefSizes = {
   }
 }
 
-const tarballs: Store<CacheTarballs> = StoreFactory(tarballDB)
+const tarballs = {
+  find: function (name: string, version: string): undefined | [string, string][] {
+    const result = db.prepare(`SELECT tarballs FROM ${TARBALL} WHERE name = ? AND version = ?`)
+      .get(name, version)
+
+    if (result === undefined) {
+      return undefined
+    }
+
+    return JSON.parse(result.tarballs)
+  },
+  insert: function ({ name, version, tarballs }: CacheTarballs) {
+    db.prepare(`INSERT OR REPLACE INTO ${TARBALL} (name, version, tarballs) VALUES (?, ?, ?)`)
+      .run(name, version, JSON.stringify(tarballs))
+  }
+}
+
 const pkgSizes: Store<PkgDownloadSize> = StoreFactory(pkgSizeDB)
 
 function StoreFactory (db: any) {
