@@ -1,6 +1,4 @@
 // @ts-ignore: declare own types on promisified stores
-import NeDB from 'nedb'
-import { promisify } from 'util'
 import fs from 'fs'
 import path from 'path'
 import Database, { Database as SqliteDatabase } from 'better-sqlite3'
@@ -14,16 +12,8 @@ if (!fs.existsSync(folder)) {
 
 const db = new Database(dbFilename)
 
-// initial db setup
 const HREF_SIZE = 'href_size'
 db.prepare(`CREATE TABLE IF NOT EXISTS ${HREF_SIZE} (href text, size integer)`).run()
-const TARBALL = 'tarball'
-db.prepare(`CREATE TABLE IF NOT EXISTS ${TARBALL} (name text, version text, tarballs text)`).run()
-
-const pkgSizeDB = new NeDB({
-  filename: path.join(folder, 'pkgSizes.json'),
-  autoload: true
-})
 
 const hrefSizes = {
   find: function (href: string): undefined | { size: number } {
@@ -34,6 +24,9 @@ const hrefSizes = {
       .run(hrefSize.href, hrefSize.size)
   }
 }
+
+const TARBALL = 'tarball'
+db.prepare(`CREATE TABLE IF NOT EXISTS ${TARBALL} (name text, version text, tarballs text)`).run()
 
 const tarballs = {
   find: function (name: string, version: string): undefined | [string, string][] {
@@ -52,13 +45,48 @@ const tarballs = {
   }
 }
 
-const pkgSizes: Store<PkgDownloadSize> = StoreFactory(pkgSizeDB)
+const PACKAGE_SIZE = 'package_size'
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS ${PACKAGE_SIZE}
+  (
+    name text,
+    version text,
+    tarballSize integer,
+    totalDependencies integer,
+    size integer,
+    prettySize text,
+    dependencies text
+  )
+`).run()
 
-function StoreFactory (db: any) {
-  return {
-    // we need to bind nedb to preserve `this`
-    findOne: promisify(db.findOne).bind(db),
-    insert: promisify(db.insert).bind(db),
+const pkgSizes = {
+  find: function (name: string, version: string): undefined | PkgDownloadSize {
+    const result = db.prepare(`
+      SELECT tarballSize, totalDependencies, size, prettySize, dependencies FROM ${PACKAGE_SIZE} WHERE name = ? AND version = ?
+    `).get(name, version)
+
+    if (result === undefined) {
+      return undefined
+    }
+
+    return {
+      name,
+      version,
+      wanted: '',
+      tarballSize: result.tarballSize,
+      totalDependencies: result.totalDependencies,
+      size: result.size,
+      prettySize: result.prettySize,
+      dependencies: JSON.parse(result.dependencies)
+    }
+  },
+  insert: function ({ name, version, tarballSize,  totalDependencies,  size,  prettySize,  dependencies }: PkgDownloadSize) {
+    db.prepare(`
+      INSERT OR REPLACE INTO ${PACKAGE_SIZE}
+        (name, version, tarballSize,  totalDependencies,  size,  prettySize,  dependencies)
+        VALUES
+        (?, ?, ?, ?, ?, ?, ?)
+    `).run(name, version, tarballSize,  totalDependencies,  size,  prettySize,  JSON.stringify(dependencies))
   }
 }
 

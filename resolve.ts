@@ -13,9 +13,10 @@ import LRU from 'lru-cache'
 export async function getDownloadSize (name: string, wanted = 'latest'): Promise<PkgDownloadSize> {
     let { version, dependencies: deps } = await getManifest(name, wanted)
 
-    let downloadSizeCache = await cache.pkgSizes.findOne({ name, version })
-    if (downloadSizeCache !== null)  {
-        return downloadSizeCache
+    let downloadSizeCache = cache.pkgSizes.find(name, version)
+    if (downloadSizeCache !== undefined)  {
+        // use wanted from request, not db
+        return { ...downloadSizeCache, wanted }
     }
 
     let pool = await agents

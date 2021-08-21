@@ -20,8 +20,6 @@ describe('getDownloadSize', () => {
         let pool = await agents_1.default;
         await pool.drain();
         rm(path_1.default.join('storage', 'cache.sqlite3'));
-        rm(path_1.default.join('storage', 'pkgSizes.json'));
-        rm(path_1.default.join('storage', 'tarballs.json'));
     });
     it('resolves chalk 2.4.1', async function () {
         this.timeout(3 * 1000);

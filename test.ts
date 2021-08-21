@@ -19,8 +19,6 @@ describe('getDownloadSize', () => {
         await pool.drain()
 
         rm(path.join('storage', 'cache.sqlite3'))
-        rm(path.join('storage', 'pkgSizes.json'))
-        rm(path.join('storage', 'tarballs.json'))
     })
 
     it('resolves chalk 2.4.1', async function () {

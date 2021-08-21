@@ -15,9 +15,10 @@ const path_1 = __importDefault(require("path"));
 const lru_cache_1 = __importDefault(require("lru-cache"));
 async function getDownloadSize(name, wanted = 'latest') {
     let { version, dependencies: deps } = await getManifest(name, wanted);
-    let downloadSizeCache = await cache_1.default.pkgSizes.findOne({ name, version });
-    if (downloadSizeCache !== null) {
-        return downloadSizeCache;
+    let downloadSizeCache = cache_1.default.pkgSizes.find(name, version);
+    if (downloadSizeCache !== undefined) {
+        // use wanted from request, not db
+        return Object.assign({}, downloadSizeCache, { wanted });
     }
     let pool = await agents_1.default;
     let agent = await pool.get();
