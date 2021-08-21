@@ -25,7 +25,7 @@ function getHrefSize(href, agent, retry = false) {
             }
         });
         req.on('response', (response) => {
-            response.destroy();
+            response.socket.end();
             if (response.statusCode === 302 && response.headers['location']) {
                 // @ts-ignore: redirect -> recurse
                 href = response.headers['location'];

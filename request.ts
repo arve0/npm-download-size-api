@@ -25,7 +25,7 @@ function getHrefSize (href: string, agent: Agent, retry = false): Promise<number
     })
 
     req.on('response', (response: IncomingMessage) => {
-      response.destroy()
+      response.socket.end()
 
       if (response.statusCode === 302 && response.headers['location']) {
         // @ts-ignore: redirect -> recurse
